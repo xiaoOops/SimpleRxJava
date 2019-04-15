@@ -7,7 +7,7 @@ import com.example.myrxjava.MyRxJava.utils.CheckUtils;
 /**
  * @version V1.0
  * @Title: Loan
- * @Description:
+ * @Description: 常规模式
  * @date 2019/4/12
  * @author:xiaox
  * @email:303378520@qq.com

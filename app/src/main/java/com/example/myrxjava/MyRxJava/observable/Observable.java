@@ -1,6 +1,7 @@
 package com.example.myrxjava.MyRxJava.observable;
 
 import com.example.myrxjava.MyRxJava.observer.Observer;
+import com.example.myrxjava.MyRxJava.schedulers.Scheduler;
 
 /**
  * @version V1.0
@@ -23,6 +24,14 @@ public abstract class Observable<T> implements ObservableSource<T> {
         subscribeActual(observer);
     }
 
-    protected abstract void subscribeActual(Observer<? super T> Observer);
+    protected abstract void subscribeActual(Observer<? super T> observer);
+
+    private Observable subscribeOn(Scheduler scheduler) {
+        return new ObservableObserveOn(this, scheduler);
+    }
+
+    private Observable observeOn(Scheduler scheduler) {
+        return new ObservableObserveOn(this, scheduler);
+    }
 
 }
