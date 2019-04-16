@@ -26,11 +26,11 @@ public abstract class Observable<T> implements ObservableSource<T> {
 
     protected abstract void subscribeActual(Observer<? super T> observer);
 
-    private Observable subscribeOn(Scheduler scheduler) {
-        return new ObservableObserveOn(this, scheduler);
+    public Observable subscribeOn(Scheduler scheduler) {
+        return new ObservableSubscribeOn(this, scheduler);
     }
 
-    private Observable observeOn(Scheduler scheduler) {
+    public Observable observeOn(Scheduler scheduler) {
         return new ObservableObserveOn(this, scheduler);
     }
 

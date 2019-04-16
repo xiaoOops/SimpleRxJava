@@ -8,6 +8,7 @@ import com.example.myrxjava.MyRxJava.observable.Observable;
 import com.example.myrxjava.MyRxJava.observable.ObservableEmitter;
 import com.example.myrxjava.MyRxJava.observable.ObservableOnSubscribe;
 import com.example.myrxjava.MyRxJava.observer.Observer;
+import com.example.myrxjava.MyRxJava.schedulers.Schedulers;
 import com.example.myrxjava.MyRxJava.utils.RLog;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
@@ -21,6 +22,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     private void initView() {
         findViewById(R.id.btn_base).setOnClickListener(this);
+        findViewById(R.id.btn_scheduler).setOnClickListener(this);
     }
 
     @Override
@@ -29,7 +31,48 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             case R.id.btn_base:
                 testBase();
                 break;
+            case R.id.btn_scheduler:
+                testScheduler();
+                break;
         }
+    }
+
+    private void testScheduler() {
+        Observable.creat(new ObservableOnSubscribe<Integer>() {
+            @Override
+            public void subscribe(ObservableEmitter<Integer> emitter) throws Exception {
+                RLog.printInfo("subscribe 开始发送");
+                emitter.onNext(1);
+                emitter.onNext(2);
+                emitter.onNext(3);
+                emitter.onComplete();
+            }
+        })
+                //多次调用subcribeOn只有第一次有效
+                .subscribeOn(Schedulers.ANDROID_MAIN_THREAD)
+                .subscribeOn(Schedulers.IO)
+                .observeOn(Schedulers.ANDROID_MAIN_THREAD)
+                .subscribe(new Observer<Integer>() {
+                    @Override
+                    public void onSubscribe() {
+
+                    }
+
+                    @Override
+                    public void onNext(Integer value) {
+                        RLog.printInfo("observer 接收到 = " + value);
+                    }
+
+                    @Override
+                    public void onError(Throwable throwable) {
+
+                    }
+
+                    @Override
+                    public void onComplete() {
+
+                    }
+                });
     }
 
     private void testBase() {

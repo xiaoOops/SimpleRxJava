@@ -22,17 +22,20 @@ public final class AndroidScheduler extends Scheduler {
         return AndroidSchedulersHolder.INSTANCE;
     }
 
+    private static final class AndroidSchedulersHolder {
+        private static AndroidScheduler INSTANCE = new AndroidScheduler();
+    }
+
     @Override
     public void scheduleDirect(Runnable runnable) {
         //此处使用的主线程的Handler，已完成了线程的切换
-        Message message = handler.obtainMessage();
+        Message message = Message.obtain(handler, runnable);
         message.obj = this;
         handler.sendMessage(message);
     }
 
-    private static final class AndroidSchedulersHolder {
-        private static AndroidScheduler INSTANCE = new AndroidScheduler();
-    }
+
+
 
 
 }

@@ -2,6 +2,7 @@ package com.example.myrxjava.MyRxJava.observable;
 
 import com.example.myrxjava.MyRxJava.observer.Observer;
 import com.example.myrxjava.MyRxJava.schedulers.Scheduler;
+import com.example.myrxjava.MyRxJava.utils.RLog;
 
 /**
  * @version V1.0
@@ -26,6 +27,7 @@ public class ObservableObserveOn<T> extends Observable<T> {
     @Override
     protected void subscribeActual(Observer<? super T> observer) {
         ObserveOnObserver<T> observableObserver = new ObserveOnObserver<T>(observer, scheduler);
+        RLog.printInfo("调用subscribeActual observer = " + observer.getClass().getSimpleName());
         source.subscribe(observableObserver);
     }
 
@@ -44,6 +46,7 @@ public class ObservableObserveOn<T> extends Observable<T> {
             scheduler.scheduleDirect(new Scheduler.Worker() {
                 @Override
                 protected void excute() {
+                    //我在此处切换线程
                     observer.onSubscribe();
                 }
             });
