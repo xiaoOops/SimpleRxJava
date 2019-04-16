@@ -48,9 +48,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 emitter.onComplete();
             }
         })
-                //多次调用subcribeOn只有第一次有效
-                .subscribeOn(Schedulers.ANDROID_MAIN_THREAD)
-                .subscribeOn(Schedulers.IO)
+                //通过 1和2 可知,多次调用subcribeOn只有顺序写的第一次有效
+                //并不是因为第二次不会切换线程,而是代码最先是从最后一次subscribeOn开始执行的
+                .subscribeOn(Schedulers.ANDROID_MAIN_THREAD)// 2 接到下游通知,再通知自己的上游,可以发消息了,此处线程又进行了切换
+                .subscribeOn(Schedulers.IO)// 1. 此处是最先调用的,切换了线程,通知上游开始订阅开始了,可以发消息了
                 .observeOn(Schedulers.ANDROID_MAIN_THREAD)
                 .subscribe(new Observer<Integer>() {
                     @Override
