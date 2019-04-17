@@ -31,8 +31,8 @@ public class ObservableSubscribeOn<T> extends Observable<T> {
             @Override
             protected void excute() {
                 //在此处切换线程
+                RLog.printInfo("开始订阅 ObservableSubscribeOn");
                 RLog.printInfo("我在这里切换 sceduler = " + scheduler.getClass().getSimpleName());
-                RLog.printInfo("调用subscribeActual observer = " + observer.getClass().getSimpleName());
                 source.subscribe(subscribe);
             }
         });
@@ -53,6 +53,7 @@ public class ObservableSubscribeOn<T> extends Observable<T> {
 
         @Override
         public void onNext(T value) {
+            RLog.printInfo("ObservableSubscribeOn 接收到 = " + value);
             observer.onNext(value);
         }
 

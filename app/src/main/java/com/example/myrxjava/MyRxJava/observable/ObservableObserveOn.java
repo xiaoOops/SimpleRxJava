@@ -27,7 +27,7 @@ public class ObservableObserveOn<T> extends Observable<T> {
     @Override
     protected void subscribeActual(Observer<? super T> observer) {
         ObserveOnObserver<T> observableObserver = new ObserveOnObserver<T>(observer, scheduler);
-        RLog.printInfo("调用subscribeActual observer = " + observer.getClass().getSimpleName());
+        RLog.printInfo("开始订阅 ObservableObserveOn ");
         source.subscribe(observableObserver);
     }
 
@@ -57,6 +57,7 @@ public class ObservableObserveOn<T> extends Observable<T> {
             scheduler.scheduleDirect(new Scheduler.Worker() {
                 @Override
                 protected void excute() {
+                    RLog.printInfo(" ObservableObserveOn 接收到 = " + value);
                     observer.onNext(value);
                 }
             });

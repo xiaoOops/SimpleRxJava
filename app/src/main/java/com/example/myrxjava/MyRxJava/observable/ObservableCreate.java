@@ -3,6 +3,7 @@ package com.example.myrxjava.MyRxJava.observable;
 
 import com.example.myrxjava.MyRxJava.observer.Observer;
 import com.example.myrxjava.MyRxJava.utils.CheckUtils;
+import com.example.myrxjava.MyRxJava.utils.RLog;
 
 /**
  * @version V1.0
@@ -32,6 +33,7 @@ public final class ObservableCreate<T> extends Observable<T> {
         observer.onSubscribe();
         try {
             //emitter开始执行，其发出的事件会传递到observer
+            RLog.printInfo("开始订阅 ObservableCreate");
             source.subscribe(createEmitter);
         } catch (Exception e) {
             e.printStackTrace();
@@ -42,7 +44,7 @@ public final class ObservableCreate<T> extends Observable<T> {
     /**
      * 把Emitter发出的事件发送给数据接收者observer
      */
-    static class CreateEmitter<T> implements ObservableEmitter<T>{
+    static class CreateEmitter<T> implements ObservableEmitter<T> {
 
         final Observer<? super T> observer;
 
@@ -55,6 +57,7 @@ public final class ObservableCreate<T> extends Observable<T> {
         @Override
         public void onNext(T value) {
             CheckUtils.checkNotNull(value);
+            RLog.printInfo("ObservableCreate 接收到 = " + value);
             observer.onNext(value);
         }
 
