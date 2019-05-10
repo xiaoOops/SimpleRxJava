@@ -38,8 +38,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     /**
-     * observeOn() 影响的是数据发送之后的线程
-     * subscribeOn() 影响的是数据发送之前的线程
+     * observeOn() 在内部创建的Observer的onNext() onError() onSuccess()等回调方法里通过Scheduler指定的
+     * 线程来调用下级Observer的对应回调方法，影响的是数据发送之后的线程
+     * subscribeOn() 在Scheduler指定的线程里启动subscribe()，影响的是数据发送之前的线程
      */
     private void testScheduler() {
         Observable.creat(new ObservableOnSubscribe<Integer>() {
@@ -54,6 +55,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         })
                 //通过 1、2、3 可知,多次调用subcribeOn只有顺序写的第一次有效
                 //并不是因为第二次不会切换线程,而是代码最先是从subscribe最近的一个操作符开始执行的
+
                 // 3 接到下游通知,再通知自己的上游,可以发数据了,此处线程又进行了切换
                 .subscribeOn(Schedulers.ANDROID_MAIN_THREAD)
                 // 2 subcribeOn是在发送数据前就切换了线程，通知上游开始订阅开始了,可以发数据了，此时已经切换了线程
