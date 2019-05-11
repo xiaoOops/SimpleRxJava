@@ -39,8 +39,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     /**
      * observeOn() 在内部创建的Observer的onNext() onError() onSuccess()等回调方法里通过Scheduler指定的
-     * 线程来调用下级Observer的对应回调方法，影响的是数据发送之后的线程
-     * subscribeOn() 在Scheduler指定的线程里启动subscribe()，影响的是数据发送之前的线程
+     * 线程来调用下级Observer的对应回调方法，等于是拿到数据发送给下游时才切换线程
+     * subscribeOn() 在Scheduler指定的线程里启动subscribe()，等于是通知上游订阅时就已经切换了线程
      */
     private void testScheduler() {
         Observable.creat(new ObservableOnSubscribe<Integer>() {
