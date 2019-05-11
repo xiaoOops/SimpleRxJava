@@ -60,6 +60,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 .subscribeOn(Schedulers.ANDROID_MAIN_THREAD)
                 // 2 subcribeOn是在发送数据前就切换了线程，通知上游开始订阅开始了,可以发数据了，此时已经切换了线程
                 .subscribeOn(Schedulers.IO)
+
+                // 因为发生了订阅，即 observable.subscribe(observe),rxjava才开始执行
+                // 所以应该是离subscribe这个订阅动作最近的操作符最先执行
                 // 1 最先执行,通知上游(即Observable)订阅开始了
                 //  observeOn 是在接收到数据之后处理时切换线程,此时通知上游发送数据,还未切线程
                 .observeOn(Schedulers.ANDROID_MAIN_THREAD)
