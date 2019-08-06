@@ -57,7 +57,7 @@ public final class ObservableCreate<T> extends Observable<T> {
         @Override
         public void onNext(T value) {
             CheckUtils.checkNotNull(value);
-            RLog.printInfo("ObservableCreate 接收到 = " + value);
+            RLog.printInfo("ObservableCreate 发送  " + value);
             observer.onNext(value);
         }
 

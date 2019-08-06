@@ -43,6 +43,7 @@ public class ObservableObserveOn<T> extends Observable<T> {
 
         @Override
         public void onSubscribe() {
+            RLog.printInfo(" ObservableObserveOn onSubscribe ");
             scheduler.scheduleDirect(new Scheduler.Worker() {
                 @Override
                 protected void excute() {

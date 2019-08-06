@@ -8,7 +8,7 @@ import android.util.Log;
 
 public class RLog {
 	private static boolean enable = true;
-	private static final String TAG = "RxJava";
+	private static final String TAG = "xiaoTag";
 
 	public static void setEnable(boolean enable) {
 		RLog.enable = enable;

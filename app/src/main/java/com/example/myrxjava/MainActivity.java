@@ -41,6 +41,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
      * observeOn() 影响的是数据发送之后的线程
      * subscribeOn() 影响的是数据发送之前的线程
      */
+    @SuppressWarnings("all")
     private void testScheduler() {
         Observable.creat(new ObservableOnSubscribe<Integer>() {
             @Override
@@ -54,17 +55,17 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         })
                 //通过 1、2、3 可知,多次调用subcribeOn只有顺序写的第一次有效
                 //并不是因为第二次不会切换线程,而是代码最先是从subscribe最近的一个操作符开始执行的
-                // 3 接到下游通知,再通知自己的上游,可以发数据了,此处线程又进行了切换
-                .subscribeOn(Schedulers.ANDROID_MAIN_THREAD)
-                // 2 subcribeOn是在发送数据前就切换了线程，通知上游开始订阅开始了,可以发数据了，此时已经切换了线程
+                // 3.接到下游通知,再通知自己的上游,可以发数据了,此处线程又进行了切换
                 .subscribeOn(Schedulers.IO)
-                // 1 最先执行,通知上游(即Observable)订阅开始了
+                // 2.subcribeOn是在发送数据前就切换了线程，通知上游开始订阅开始了,可以发数据了，此时已经切换了线程
+                .subscribeOn(Schedulers.ANDROID_MAIN_THREAD)
+                // 1.离subscribe最近的操作符最先执行,通知上游(即Observable)订阅开始了
                 //  observeOn 是在接收到数据之后处理时切换线程,此时通知上游发送数据,还未切线程
                 .observeOn(Schedulers.ANDROID_MAIN_THREAD)
                 .subscribe(new Observer<Integer>() {
                     @Override
                     public void onSubscribe() {
-
+                        RLog.printInfo("MainActivity 开始订阅 = ");
                     }
 
                     @Override
@@ -82,29 +83,36 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
                     }
                 });
+        /*
+         *  [Thread: main]_开始订阅 ObservableObserveOn
+         *  [Thread: main]_开始订阅 ObservableSubscribeOn
+         *  [Thread: main]_这里切换了线程
+         *  [Thread: RxJava IO Thread #1]_开始订阅 ObservableSubscribeOn
+         *  [Thread: RxJava IO Thread #1]_这里切换了线程
+         *  [Thread: RxJava IO Thread #1]_开始订阅 ObservableCreate
+         *  [Thread: RxJava IO Thread #1]_subscribe 开始发送
+         *  [Thread: RxJava IO Thread #1]_ObservableCreate 发送  1
+         *  [Thread: RxJava IO Thread #1]_ObservableSubscribeOn 接收到 = 1
+         *  [Thread: RxJava IO Thread #1]_ObservableSubscribeOn 接收到 = 1
+         *  [Thread: RxJava IO Thread #1]_ObservableCreate 发送  2
+         *  [Thread: RxJava IO Thread #1]_ObservableSubscribeOn 接收到 = 2
+         *  [Thread: RxJava IO Thread #1]_ObservableSubscribeOn 接收到 = 2
+         *  [Thread: RxJava IO Thread #1]_ObservableCreate 发送  3
+         *  [Thread: RxJava IO Thread #1]_ObservableSubscribeOn 接收到 = 3
+         *  [Thread: RxJava IO Thread #1]_ObservableSubscribeOn 接收到 = 3
+         *
+         *  因为ObservableObserveOn被切换到了主线程了，要通过handler处理，所以此时会有延迟
+         *  [Thread: main]_MainActivity 开始订阅
+         *  [Thread: main]_ ObservableObserveOn 接收到 = 1
+         *  [Thread: main]_MainActivity 接收到 = 1
+         *  [Thread: main]_ ObservableObserveOn 接收到 = 2
+         *  [Thread: main]_MainActivity 接收到 = 2
+         *  [Thread: main]_ ObservableObserveOn 接收到 = 3
+         *  [Thread: main]_MainActivity 接收到 = 3
+         *
+         */
 
-        //[Thread: main]_开始订阅 ObservableObserveOn
-        //[Thread: RxJava IO Thread #1]_开始订阅 ObservableSubscribeOn
-        //[Thread: RxJava IO Thread #1]_我在这里切换 sceduler = IoScheduler
-        //[Thread: main]_开始订阅 ObservableSubscribeOn
-        //[Thread: main]_我在这里切换 sceduler = AndroidScheduler
-        //[Thread: main]_开始订阅 ObservableCreate
-        //[Thread: main]_subscribe 开始发送
-        //[Thread: main]_ObservableCreate 接收到 = 1
-        //[Thread: main]_ObservableSubscribeOn 接收到 = 1
-        //[Thread: main]_ObservableSubscribeOn 接收到 = 1
-        //[Thread: main]_ObservableCreate 接收到 = 2
-        //[Thread: main]_ObservableSubscribeOn 接收到 = 2
-        //[Thread: main]_ObservableSubscribeOn 接收到 = 2
-        //[Thread: main]_ObservableCreate 接收到 = 3
-        //[Thread: main]_ObservableSubscribeOn 接收到 = 3
-        //[Thread: main]_ObservableSubscribeOn 接收到 = 3
-        //[Thread: main]_ ObservableObserveOn 接收到 = 1
-        //[Thread: main]_MainActivity 接收到 = 1
-        //[Thread: main]_ ObservableObserveOn 接收到 = 2
-        //[Thread: main]_MainActivity 接收到 = 2
-        //[Thread: main]_ ObservableObserveOn 接收到 = 3
-        //[Thread: main]_MainActivity 接收到 = 3
+
     }
 
     private void testBase() {
